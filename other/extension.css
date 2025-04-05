@@ -1,0 +1,17 @@
+/* 冻结效果 */
+.player .hyyzBuff-dongjie {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*默认不显示*/
+    opacity: 0;
+    background-image: url("image/hyyzBuff-dongjie.png");
+    background-size: cover;
+    pointer-events: none;
+    z-index: 62;
+}
+
+/* 用hyyzBuff_dongjie控制hyyzBuff-dongjie的透明度，显示一下 */
+.player.hyyzBuff_dongjie>.hyyzBuff-dongjie {
+    opacity: 1;
+}
