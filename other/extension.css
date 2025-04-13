@@ -15,3 +15,59 @@
 .player.hyyzBuff_dongjie>.hyyzBuff-dongjie {
     opacity: 1;
 }
+
+/* 影子的颜色为主颜色参数取0.7倍*/
+.gs_fire {
+    text-shadow: 1px 1px 2px rgb(255, 0, 0), 0 0 8px rgb(178, 0, 0);
+    color: white;
+}
+
+.gs_water {
+    text-shadow: 1px 1px 2px rgb(0, 100, 255), 0 0 8px rgb(0, 70, 178);
+    color: white;
+}
+
+.gs_wind {
+    text-shadow: 1px 1px 2px rgb(80, 220, 220), 0 0 8px rgb(56, 154, 154);
+    color: white;
+}
+
+.gs_thunder {
+    text-shadow: 1px 1px 2px rgb(180, 0, 180), 0 0 8px rgb(126, 0, 126);
+    color: white;
+}
+
+.gs_grass {
+    text-shadow: 1px 1px 2px rgb(0, 255, 0), 0 0 8px rgb(0, 178, 0);
+    color: white;
+}
+
+.gs_ice {
+    text-shadow: 1px 1px 2px rgb(70, 170, 170), 0 0 8px rgb(49, 119, 119);
+    color: white;
+}
+
+.gs_rock {
+    text-shadow: 1px 1px 2px rgb(200, 150, 0), 0 0 8px rgb(140, 105, 0);
+    color: white;
+}
+
+.gs_fire_grass {
+    text-shadow: 1px 1px 2px rgb(255, 150, 0), 0 0 8px rgb(178, 105, 0);
+    color: white;
+}
+
+.gs_thunder_grass {
+    text-shadow: 1px 1px 2px rgb(190, 255, 0), 0 0 8px rgb(133, 178, 0);
+    color: white;
+}
+
+.gs_water_ice {
+    text-shadow: 1px 1px 2px rgb(120, 120, 200), 0 0 8px rgb(84, 84, 140);
+    color: white;
+}
+
+.gs_water_grass {
+    text-shadow: 1px 1px 2px rgb(0, 160, 0), 0 0 8px rgb(0, 112, 0);
+    color: white;
+}

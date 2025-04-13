@@ -44,7 +44,8 @@ if (lib.version && lib.config.gs_setCompareVersion != lib.config.noname_version)
 }
 game.import("extension", function (lib, game, ui, get, ai, _status) {
     return {
-        name: "原杀", editable: false,
+        name: '原杀',
+        editable: false,
         precontent: PRECONTENT,
         content: CONTENT,
         help: HELP,

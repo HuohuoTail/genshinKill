@@ -1,20 +1,11 @@
 import { lib, game, ui, get, ai, _status } from '../../../noname.js';
 import { voices } from './voices.js';
 
-/** @type { importCharacterConfig } */
-export const gsCharacters = {
-	character: {
-		gs_lisha: ['female', 'mengde', 3, ['gs_maichongdemonv', 'gs_gaodengyuansulun', 'gs_test3'], ['ext:原杀/asset/gs/image/gs_lisha.jpg']]
-	},
-	characterIntro: {},
-	characterTitle: {
-		get gs_lisha() {
-			return get.gs_colorText('thunder', '蔷薇魔女')
-		}
-	},
-	skill: {
-		//丽莎
-		gs_maichongdemonv: {
+const gsCharacters = {
+	/** @type { importCharacterConfig['skill'] } */
+	蒙德: {
+		gs_lisha: ['丽莎', ['female', 'mengde', 3, ['gsmaichongdemonv', 'gsgaodengyuansulun'], []], get.colorText('thunder', '蔷薇魔女'), ''],
+		gsmaichongdemonv: {
 			nobracket: true,
 			enable: 'phaseUse',
 			usable: 1,
@@ -23,9 +14,7 @@ export const gsCharacters = {
 			},
 			filterCard: true,
 			check(card) {
-				if (get.value(card) > 8) return false;
-				if (!ui.selected.cards.length) return get.color(card) == 'black' && get.type(card) != 'basic';
-				return true;
+				return get.value(card) < 8 || get.color(card) == 'black' && get.type(card) != 'basic';
 			},
 			position: 'he',
 			selectCard: [1, Infinity],
@@ -34,16 +23,16 @@ export const gsCharacters = {
 				if (event.cards.some(card => get.color(card) == 'black' && get.type(card) != 'basic')) {
 					num++;
 					player
-						.when({ player: 'useCard' })
-						.filter((event, player) => !event.card.elementObj && !get.tag(event.card, 'gs_element'))
+						.when({ player: 'useCard1' })
+						.filter((event, player) => !event.card.elementObj)
 						.then(() => {
-							game.setElement(trigger.card, 'thunder')
+							game.setElement(trigger.card, 'thunder', true)
 						})
 				}
 				await player.draw(num);
 			},
 			ai: {
-				order: 1,
+				order: 10,
 				result: {
 					player(player, target, card) {
 						return 1;
@@ -51,7 +40,7 @@ export const gsCharacters = {
 				}
 			}
 		},
-		gs_gaodengyuansulun: {
+		gsgaodengyuansulun: {
 			nobracket: true,
 			trigger: {
 				source: 'reactionBegin'
@@ -61,23 +50,80 @@ export const gsCharacters = {
 			},
 			forced: true,
 			async content(event, trigger, player) {
-				let elements = trigger.gs_name.split(lib.natureSeparator);
+				let elements = trigger.reactionName.split(lib.natureSeparator);
 				trigger.elementObj = {}
 				trigger.elementObj[elements[0]] = trigger.elementObj[elements[1]] = 1;
 			}
 		},
-
+		gsmaichongdemonv_info: `脉冲的魔女|阶段技，你可以弃置任意张牌，然后摸等量的牌。若因此弃置黑色非基本牌，则摸牌数+1，且使用的下一张无元素牌附加${get.colorText('thunder', '雷')}元素。`,
+		gsgaodengyuansulun_info: '高等元素论|锁定技，你触发元素反应时，每种元素仅消耗1点。',
 	},
-	characterSort: {},
-	translate: {
-		...voices,
-		gs_lisha: '丽莎',
-		gs_maichongdemonv: '脉冲的魔女',
-		get gs_maichongdemonv_info() {
-			return `阶段技，你可以弃置任意张牌，然后摸等量的牌。若因此弃置黑色非基本牌，则摸牌数+1，且使用的下一张无元素牌附加${get.gs_colorText('thunder', '雷')}元素。`
+	/** @type { importCharacterConfig['skill'] } */
+	璃月: {
+		gs_HuohuoTail: ['尾巴酱', ['male', 'liyue', 3, ['gszhuojian', 'gsdingji'], []]],//
+		gszhuojian: {
+			audio: "ext:原杀/asset/gs/audio:4",
+			trigger: {
+				player: ["useCardBefore", "shaBegin"],
+				//source: "damageSource"
+			},
+			direct: true,
+			filter(event, player) {
+				switch (event.name) {
+					case 'useCard': return (get.name(event.card) == 'sha') && !get.is.virtualCard(event.card)
+					case 'damage': return event.card.name == 'sha' && event.getParent(2).name == "reaction"
+					default: return true;
+				}
+			},
+			async content(event, trigger, player) {
+				switch (trigger.name) {
+					case 'useCard':
+						player.logSkill(event.name);
+						trigger.card = get.autoViewAs({ name: get.name(trigger.card), isCard: true }, []);
+						trigger.cards = trigger.card.cards = [];
+						break;
+					case 'damage':
+						player.logSkill(event.name);
+						player.useCard({ name: 'gs_dianshi' }, player);
+						break;
+					default:
+						trigger.setContent(lib.skill.gszhuojian.shaContent);
+						break;
+				}
+			},
+			async shaContent(event, player, trigger) { event.target.reaction('fire|thunder', {}) },
+			ai: {
+				unequip: true,
+				"unequip_ai": true,
+				skillTagFilter(player, tag, arg) {
+					return arg?.name == 'sha'
+				},
+			},
 		},
-		gs_gaodengyuansulun: '高等元素论',
-		gs_gaodengyuansulun_info: '锁定技，你触发元素反应时，每种元素仅消耗1点。',
-
+		gsdingji: {
+			audio: "ext:原杀/asset/gs/audio:2",
+			mod: {
+				enchant(player, result) {
+					return (lib.nature.get(result) || 0) > (lib.nature.get('fire_grass') || 0) ? result : 'fire_grass'
+				},
+				resonance(player, result) {
+					if (player.countCards('e') > 0) return (lib.nature.get(result) || 0) > (lib.nature.get('thunder') || 0) ? result : 'thunder'
+				},
+			},
+		},
+		gszhuojian_info: `灼见|锁定技，你声明使用的【杀】均为虚拟牌且效果改为“目标角色触发${get.colorText('fire', '火超载')}”。`,
+		gsdingji_info: `鼎基|锁定技，你视为附着“${get.colorText('fire_grass')}”；你装备区内的牌视为${get.colorText('thunder')}共鸣指示物。`,
 	},
+	/** @type { importCharacterConfig['skill'] } */
+	稻妻: {},
+	/** @type { importCharacterConfig['skill'] } */
+	须弥: {},
+	/** @type { importCharacterConfig['skill'] } */
+	枫丹: {},
+	/** @type { importCharacterConfig['skill'] } */
+	纳塔: {},
+	/** @type { importCharacterConfig['skill'] } */
+	至冬: {},
 }
+const gsdynamicTranslates = {}
+export { gsCharacters, gsdynamicTranslates }
